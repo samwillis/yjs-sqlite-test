@@ -43,3 +43,42 @@ ALTER TABLE docs ADD COLUMN aMapKey INTEGER GENERATED ALWAYS AS (y_get_map_json(
 CREATE INDEX docs_aMapKey ON docs (aMapKey);
 SELECT doc FROM docs WHERE aMapKey = 'a value';
 ```
+
+## How to use
+
+Somthing a little like this:
+
+```js
+import * as yjsSQLite from "./yjsSQLite.js";
+
+const db = new sqlite3.oo1.DB("/mydb.sqlite3", "ct");
+yjsSQLite.install(db);
+```
+
+Now you have a bunch of `y_...` functions available in your database:
+
+- `y_new_doc()`
+  Create a new Y.Doc and return its initial state as an update
+
+- `y_apply_update(savedDoc, update)`
+  Apply a document update to the document
+
+- `y_merge_updates(updates)`
+  Merge several document updates into a single document
+
+- `y_diff_update(savedDoc, stateVector)`
+  Encode the missing differences to another document as a single update message 
+  that can be applied on the remote document. Specify a target state vector.
+
+- `y_encode_state_vector(savedDoc)`
+  Computes the state vector and encodes it into an Uint8Array
+
+- `y_get_map_json(savedDoc, key)`
+  Get the map at the given key from the given savedDoc, and return it as JSON.
+  JSON is then queryable via the SQLite JSON operators.
+
+- `y_get_array_json(savedDoc, key)`
+  As above but for a top level array.
+
+- `y_get_xml_fragment_json(savedDoc, key)`
+  As above but for a top level xml fragment.
